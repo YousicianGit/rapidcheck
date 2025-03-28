@@ -72,8 +72,6 @@ add_library(rapidcheck
   src/gen/detail/ScaleInteger.cpp
   )
 
-target_link_libraries(rapidcheck PUBLIC Boost::headers)
-
 # Random is used a LOT so it should preferably be really fast.
 if(MSVC)
   set_property(SOURCE src/Random.cpp

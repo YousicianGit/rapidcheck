@@ -1,7 +1,5 @@
 #include "rapidcheck/Assertions.h"
 
-#include "rapidcheck/detail/Cpp11.h"
-
 namespace rc {
 namespace detail {
 
@@ -9,7 +7,7 @@ std::string makeMessage(const std::string &file,
                         int line,
                         const std::string &assertion,
                         const std::string &extra) {
-  auto msg = file + ":" + rc::to_string(line) + ":\n" + assertion;
+  auto msg = file + ":" + std::to_string(line) + ":\n" + assertion;
   if (!extra.empty()) {
     msg +=
         "\n"

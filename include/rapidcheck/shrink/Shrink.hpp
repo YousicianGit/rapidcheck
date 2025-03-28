@@ -3,7 +3,6 @@
 #include <cmath>
 #include <locale>
 
-#include "rapidcheck/detail/Cpp11.h"
 #include "rapidcheck/seq/Transform.h"
 #include "rapidcheck/seq/Create.h"
 #include "rapidcheck/Compat.h"
@@ -176,7 +175,7 @@ Seq<T> real(T value) {
     shrinks.push_back(-value);
   }
 
-  T truncated = rc::trunc(value);
+  T truncated = std::trunc(value);
   if (std::abs(truncated) < std::abs(value)) {
     shrinks.push_back(truncated);
   }
