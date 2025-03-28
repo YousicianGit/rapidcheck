@@ -6,7 +6,7 @@ if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 option(RC_ENABLE_TESTS "Build RapidCheck tests" OFF)
 option(RC_ENABLE_EXAMPLES "Build RapidCheck examples" OFF)
@@ -72,8 +72,7 @@ add_library(rapidcheck
   src/gen/detail/ScaleInteger.cpp
   )
 
-# TODO switch to Boost::headers when CMake 3.15 is deployed everywhere
-target_link_libraries(rapidcheck PUBLIC Boost::boost)
+target_link_libraries(rapidcheck PUBLIC Boost::headers)
 
 # Random is used a LOT so it should preferably be really fast.
 if(MSVC)
