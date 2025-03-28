@@ -6,6 +6,7 @@
 #include "rapidcheck/gen/detail/ShrinkValueIterator.h"
 #include "rapidcheck/shrink/Shrink.h"
 #include "rapidcheck/shrinkable/Create.h"
+#include "rapidcheck/Compat.h"
 
 namespace rc {
 namespace gen {
@@ -244,7 +245,7 @@ public:
                                   int size,
                                   std::size_t count,
                                   const Gen<T> &gen) const {
-    using Key = Decay<typename std::result_of<F(T)>::type>;
+    using Key = Decay<typename rc::compat::return_type<F,T>::type>;
     std::set<Key> values;
     return detail::generateShrinkables(random,
                                        size,
@@ -259,18 +260,18 @@ public:
   template <typename T>
   Seq<Shrinkables<T>>
   shrinkElements(const Shrinkables<T> &shrinkables) const {
-    using Key = Decay<typename std::result_of<F(T)>::type>;
+    using Key = Decay<typename rc::compat::return_type<F,T>::type>;
     const auto keys = std::make_shared<std::set<Key>>();
     for (const auto &shrinkable : shrinkables) {
       keys->insert(m_f(shrinkable.value()));
     }
 
     return shrink::eachElement(shrinkables,
-                               [=](const Shrinkable<T> &s) {
+                               [this, keys](const Shrinkable<T> &s) {
                                  const auto valueKey = m_f(s.value());
                                  return seq::filter(
                                      s.shrinks(),
-                                     [=](const Shrinkable<T> &shrink) {
+                                     [this, keys, valueKey](const Shrinkable<T> &shrink) {
                                        const auto shrinkKey = m_f(shrink.value());
                                        return (!(valueKey < shrinkKey) &&
                                                !(shrinkKey < valueKey)) ||
