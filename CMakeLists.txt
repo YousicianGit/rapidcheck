@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.16)
 project(rapidcheck CXX)
 
 # Don't warn about symbol visibility for static libraries with CMake 3.3 and later.
@@ -6,7 +6,7 @@ if(POLICY CMP0063)
   cmake_policy(SET CMP0063 NEW)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 option(RC_ENABLE_TESTS "Build RapidCheck tests" OFF)
 option(RC_ENABLE_EXAMPLES "Build RapidCheck examples" OFF)
@@ -72,9 +72,6 @@ add_library(rapidcheck
   src/gen/detail/ScaleInteger.cpp
   )
 
-# TODO switch to Boost::headers when CMake 3.15 is deployed everywhere
-target_link_libraries(rapidcheck PUBLIC Boost::boost)
-
 # Random is used a LOT so it should preferably be really fast.
 if(MSVC)
   set_property(SOURCE src/Random.cpp
@@ -105,8 +102,8 @@ if(MINGW)
   target_compile_definitions(rapidcheck PRIVATE RC_SEED_SYSTEM_TIME)
 endif()
 
-if(RC_ENABLE_RTTI)
-  target_compile_definitions(rapidcheck PUBLIC RC_USE_RTTI)
+if(NOT RC_ENABLE_RTTI)
+  target_compile_definitions(rapidcheck PUBLIC RC_DONT_USE_RTTI)
 endif()
 
 add_subdirectory(ext)
@@ -125,3 +122,20 @@ add_subdirectory(extras)
 # Install the export file specifying all the targets for RapidCheck
 install(EXPORT rapidcheckConfig DESTINATION share/rapidcheck/cmake)
 export(EXPORT rapidcheckConfig FILE rapidcheckConfig.cmake)
+
+set(PKG_CONFIG_REQUIRES)
+set(PKG_CONFIG_DESCRIPTION_SUMMARY "C++ framework for property based testing inspired by QuickCheck and other similar frameworks")
+set(PKG_CONFIG_VERSION)
+set(PKG_CONFIG_LIBDIR "\${prefix}/lib")
+set(PKG_CONFIG_INCLUDEDIR "\${prefix}/include")
+set(PKG_CONFIG_LIBS)
+set(PKG_CONFIG_CFLAGS "-I\${includedir}")
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/pkg-config.pc.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+  )
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
+  DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
+  )

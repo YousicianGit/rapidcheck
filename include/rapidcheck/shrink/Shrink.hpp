@@ -3,9 +3,9 @@
 #include <cmath>
 #include <locale>
 
-#include "rapidcheck/detail/Cpp11.h"
 #include "rapidcheck/seq/Transform.h"
 #include "rapidcheck/seq/Create.h"
+#include "rapidcheck/Compat.h"
 
 namespace rc {
 namespace shrink {
@@ -76,8 +76,8 @@ private:
 template <typename Container, typename Shrink>
 class EachElementSeq {
 public:
-  using T = typename std::result_of<Shrink(
-      typename Container::value_type)>::type::ValueType;
+  using T = typename rc::compat::return_type<Shrink,
+      typename Container::value_type>::type::ValueType;
 
   template <typename ContainerArg, typename ShrinkArg>
   explicit EachElementSeq(ContainerArg &&elements, ShrinkArg &&shrink)
@@ -175,7 +175,7 @@ Seq<T> real(T value) {
     shrinks.push_back(-value);
   }
 
-  T truncated = rc::trunc(value);
+  T truncated = std::trunc(value);
   if (std::abs(truncated) < std::abs(value)) {
     shrinks.push_back(truncated);
   }
