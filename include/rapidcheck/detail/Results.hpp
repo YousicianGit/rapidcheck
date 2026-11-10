@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstdint>
+#include <iterator>
+
 namespace rc {
 namespace detail {
 

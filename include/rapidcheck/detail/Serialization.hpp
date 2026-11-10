@@ -1,5 +1,9 @@
+#pragma once
+
 #include "Serialization.h"
 
+#include <type_traits>
+#include <algorithm>
 #include <cstdint>
 #include <limits>
 
